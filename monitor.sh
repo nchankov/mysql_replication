@@ -60,22 +60,17 @@ if [ -f /tmp/sra-mysql_replication ]; then
     fi
 fi
 
-# Remote IP (in case of server without real IP)
-if [ -z $NAME ]; then
-   NAME=`curl -s checkip.amazonaws.com`
-fi
-
 MESSAGE=""
 if [[ $IO_RUNNING != "Yes" ]]; then
-   MESSAGE+="Replica IO is not running ON $NAME\n"
+   MESSAGE+="Replica IO is not running ON $HOSTNAME\n"
 fi
 
 if [[ $SQL_RUNNING != "Yes" ]]; then
-   MESSAGE+="Replica SQL is not running ON $NAME\n"
+   MESSAGE+="Replica SQL is not running ON $HOSTNAME\n"
 fi
 
 if (( $SECONDS_BEHIND >= $MYSQL_MAX_SECONDS_BEHIND )); then
-   MESSAGE+="Replica Seconds behind are too much: $SECONDS_BEHIND ON $NAME\n"
+   MESSAGE+="Replica Seconds behind are too much: $SECONDS_BEHIND ON $HOSTNAME\n"
 fi
 
 # If the message is empty, remove the file
@@ -95,6 +90,6 @@ fi
 # the message is not empty, so write it to the file
 echo -e "$MESSAGE" > /tmp/sra-mysql_replication
 
-SUBJECT="Alert the server $NAME Replication problem"
+SUBJECT="Alert the server $HOSTNAME Replication problem"
 # Send the message
 $DIR/../../send.sh "$SUBJECT" "$MESSAGE"
